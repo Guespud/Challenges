@@ -4,3 +4,4 @@ notas.json
 notas.md
 *.bak
 dist/
+.DS_Store
