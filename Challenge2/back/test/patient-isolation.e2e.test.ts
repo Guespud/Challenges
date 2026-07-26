@@ -2,12 +2,6 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { buildApp } from '../src/app.js';
 
-/**
- * Aislamiento entre pacientes: el criterio de aceptación del SPEC que exige
- * "probado con un test e2e", no solo verificación manual. Corre contra la
- * app real (Fastify inject, sin bind de puerto) y Postgres real — no mocks.
- */
-
 let app: FastifyInstance;
 
 async function registerAndLogin(email: string, password: string, name: string) {
@@ -95,8 +89,6 @@ describe('aislamiento entre pacientes', () => {
       method: 'POST',
       url: '/habits',
       headers: { authorization: `Bearer ${patientB.accessToken}` },
-      // patientId inventado en el body: la ruta no tiene ese campo en el schema,
-      // así que debe ignorarse por completo y usar el id del JWT (patientB).
       payload: { date: '2026-01-16', water_ml: 1, exercise_min: 1, sleep_hours: 1, patientId: patientA.id },
     });
     const entry = res.json<{ patientId: string }>();

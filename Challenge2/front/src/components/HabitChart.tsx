@@ -4,7 +4,6 @@ import content from '../content/es.json';
 
 const { chart: text } = content.habits;
 
-// Validated categorical palette (dataviz skill: node scripts/validate_palette.js) — light mode only.
 const COLOR_WATER = '#2a78d6';
 const COLOR_EXERCISE = '#4a3aa7';
 const COLOR_SLEEP = '#1baf7a';
@@ -45,9 +44,6 @@ const METRICS: Metric[] = [
   },
 ];
 
-// Each metric has its own unit and scale (L, min, h) — plotting them on one shared axis
-// squashes the smaller-magnitude series flat, so each gets its own mini chart (small multiples)
-// instead of one combined line chart with three incompatible scales.
 function MetricRow({ metric, entries }: { readonly metric: Metric; readonly entries: HabitEntry[] }) {
   const data = entries.map((entry) => ({ date: formatDate(entry.date), value: metric.value(entry) }));
   const latest = data.at(-1)?.value ?? 0;

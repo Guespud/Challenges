@@ -11,8 +11,6 @@ import { patientsRoutes } from './routes/patients.routes.js';
 export async function buildApp() {
   const app = Fastify({ logger: process.env.NODE_ENV !== 'test' });
 
-  // FRONTEND_URL restricts CORS to the real production origin; without it (local dev)
-  // any origin is reflected, which is fine since auth uses bearer tokens, not cookies.
   await app.register(cors, { origin: env.FRONTEND_URL ?? true });
 
   app.setErrorHandler((error, _request, reply) => {

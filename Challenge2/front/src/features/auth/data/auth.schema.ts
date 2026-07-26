@@ -4,8 +4,6 @@ import content from '../../../content/es.json';
 
 const { validation } = content;
 
-// .trim() strips accidental leading/trailing whitespace (e.g. a tab dragged in
-// from a copy-paste) before any length/regex check runs, on both fields.
 const strongPassword = z
   .string()
   .trim()

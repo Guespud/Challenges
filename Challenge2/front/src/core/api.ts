@@ -15,7 +15,6 @@ interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
   body?: unknown;
   query?: Record<string, string | number | undefined>;
-  /** false for endpoints that must not send/refresh the access token (login, register, refresh itself) */
   auth?: boolean;
 }
 
