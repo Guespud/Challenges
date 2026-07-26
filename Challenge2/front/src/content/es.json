@@ -1,0 +1,105 @@
+{
+  "brand": {
+    "name": "NutriFit",
+    "monogram": "N"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "logout": "Salir"
+  },
+  "validation": {
+    "required": "Requerido",
+    "email": {
+      "invalid": "Email inválido"
+    },
+    "password": {
+      "min": "Mínimo 8 caracteres",
+      "weak": "La contraseña no cumple los requisitos",
+      "mismatch": "Las contraseñas no coinciden",
+      "rules": {
+        "length": "Al menos 8 caracteres",
+        "uppercase": "Una letra mayúscula",
+        "lowercase": "Una letra minúscula",
+        "number": "Un número",
+        "special": "Un carácter especial (!@#$%...)"
+      }
+    },
+    "habit": {
+      "date": "Fecha inválida",
+      "nonNegative": "Debe ser >= 0",
+      "sleepMax": "Máximo 24 horas"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Bienvenido de vuelta",
+      "subtitle": "Inicia sesión para ver tu progreso",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "footerQuestion": "¿No tienes cuenta?",
+      "footerCta": "Regístrate",
+      "genericError": "No se pudo iniciar sesión"
+    },
+    "register": {
+      "title": "Crea tu cuenta",
+      "subtitle": "Empieza a registrar tus hábitos diarios",
+      "nameLabel": "Nombre",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "confirmPasswordLabel": "Confirmar contraseña",
+      "submit": "Crear cuenta",
+      "submitting": "Creando…",
+      "footerQuestion": "¿Ya tienes cuenta?",
+      "footerCta": "Inicia sesión",
+      "genericError": "No se pudo completar el registro"
+    },
+    "passwordField": {
+      "show": "Mostrar contraseña",
+      "hide": "Ocultar contraseña"
+    }
+  },
+  "habits": {
+    "form": {
+      "title": "Registro de hoy",
+      "waterLabel": "Agua (ml)",
+      "exerciseLabel": "Ejercicio (min)",
+      "sleepLabel": "Sueño (h)",
+      "submit": "Guardar",
+      "submitting": "Guardando…",
+      "genericError": "No se pudo guardar el registro"
+    },
+    "dashboard": {
+      "greeting": "Hola",
+      "subtitle": "Tus hábitos de los últimos 30 días",
+      "historyTitle": "Historial"
+    },
+    "today": {
+      "badge": "Registrado hoy",
+      "title": "Ya registraste tus hábitos de hoy",
+      "subtitle": "Vuelve mañana para registrar un nuevo día."
+    },
+    "chart": {
+      "water": "Agua",
+      "exercise": "Ejercicio",
+      "sleep": "Sueño",
+      "empty": "Todavía no hay registros en este rango.",
+      "units": {
+        "water": "L",
+        "exercise": "min",
+        "sleep": "h"
+      }
+    },
+    "table": {
+      "title": "Registros",
+      "date": "Fecha"
+    }
+  },
+  "patients": {
+    "listTitle": "Pacientes",
+    "empty": "Aún no hay pacientes.",
+    "detailTitle": "Historial del paciente",
+    "backLink": "← Pacientes"
+  }
+}
