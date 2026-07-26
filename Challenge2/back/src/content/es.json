@@ -20,7 +20,10 @@
       "special": "Debe incluir un carácter especial"
     },
     "habit": {
-      "dateFormat": "date debe tener formato YYYY-MM-DD"
+      "dateFormat": "date debe tener formato YYYY-MM-DD",
+      "waterMax": "El agua no puede superar 10000 ml en un dia",
+      "exerciseMax": "El ejercicio no puede superar 1440 minutos en un dia",
+      "sleepMax": "El sueno no puede superar 24 horas en un dia"
     }
   }
 }
