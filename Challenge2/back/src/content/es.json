@@ -1,0 +1,26 @@
+{
+  "errors": {
+    "unauthorized": "No autenticado",
+    "forbidden": "No tienes permiso para acceder a este recurso",
+    "notFound": "Recurso no encontrado",
+    "internalServer": "Error interno del servidor",
+    "invalidToken": "Token inválido o expirado",
+    "invalidCredentials": "Credenciales inválidas",
+    "invalidRefreshToken": "Refresh token inválido o expirado",
+    "userNotFound": "Usuario no encontrado",
+    "emailAlreadyRegistered": "El email ya está registrado",
+    "patientNotFound": "Paciente no encontrado"
+  },
+  "validation": {
+    "password": {
+      "min": "Mínimo 8 caracteres",
+      "uppercase": "Debe incluir una mayúscula",
+      "lowercase": "Debe incluir una minúscula",
+      "number": "Debe incluir un número",
+      "special": "Debe incluir un carácter especial"
+    },
+    "habit": {
+      "dateFormat": "date debe tener formato YYYY-MM-DD"
+    }
+  }
+}
