@@ -45,6 +45,8 @@ export function HabitForm({ onSaved }: { readonly onSaved: () => void }) {
         <TextField
           label={text.waterLabel}
           type="number"
+          min={0}
+          max={10000}
           error={errors.water_ml?.message}
           {...register('water_ml', { valueAsNumber: true })}
         />
@@ -52,6 +54,8 @@ export function HabitForm({ onSaved }: { readonly onSaved: () => void }) {
         <TextField
           label={text.exerciseLabel}
           type="number"
+          min={0}
+          max={1440}
           error={errors.exercise_min?.message}
           {...register('exercise_min', { valueAsNumber: true })}
         />
@@ -59,6 +63,8 @@ export function HabitForm({ onSaved }: { readonly onSaved: () => void }) {
         <TextField
           label={text.sleepLabel}
           type="number"
+          min={0}
+          max={24}
           step={0.5}
           error={errors.sleep_hours?.message}
           {...register('sleep_hours', { valueAsNumber: true })}

@@ -27,7 +27,9 @@
     "habit": {
       "date": "Fecha inválida",
       "nonNegative": "Debe ser >= 0",
-      "sleepMax": "Máximo 24 horas"
+      "sleepMax": "Máximo 24 horas",
+      "waterMax": "Máximo 10000 ml",
+      "exerciseMax": "Máximo 1440 minutos"
     }
   },
   "auth": {
