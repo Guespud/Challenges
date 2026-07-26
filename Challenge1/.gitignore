@@ -1,0 +1,7 @@
+node_modules/
+notas.db
+notas.json
+notas.md
+*.bak
+dist/
+.DS_Store
