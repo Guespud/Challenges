@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  patient
+  nutritionist
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  passwordHash String       @map("password_hash")
+  role         Role
+  name         String
+  createdAt    DateTime     @default(now()) @map("created_at")
+  habitEntries HabitEntry[]
+
+  @@map("users")
+}
+
+model HabitEntry {
+  id          String   @id @default(uuid())
+  patientId   String   @map("patient_id")
+  patient     User     @relation(fields: [patientId], references: [id])
+  date        DateTime @db.Date
+  waterMl     Int      @map("water_ml")
+  exerciseMin Int      @map("exercise_min")
+  sleepHours  Float    @map("sleep_hours")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([patientId, date])
+  @@map("habit_entries")
+}
