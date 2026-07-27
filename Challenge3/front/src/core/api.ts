@@ -27,7 +27,10 @@ function buildUrl(path: string, query?: RequestOptions['query']): string {
 }
 
 async function rawRequest<T>(path: string, options: RequestOptions): Promise<T> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const headers: Record<string, string> = {};
+  // Fastify rechaza un body vacío si Content-Type: application/json está
+  // presente (FST_ERR_CTP_EMPTY_JSON_BODY) — solo lo mandamos cuando hay body.
+  if (options.body !== undefined) headers['Content-Type'] = 'application/json';
   if (options.auth !== false) {
     const token = authStorage.getAccessToken();
     if (token) headers.Authorization = `Bearer ${token}`;
@@ -36,7 +39,7 @@ async function rawRequest<T>(path: string, options: RequestOptions): Promise<T> 
   const res = await fetch(buildUrl(path, options.query), {
     method: options.method ?? 'GET',
     headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
+    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
 
   const data = await res.json().catch(() => undefined);

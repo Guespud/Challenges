@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { type FastifyError } from 'fastify';
 import cors from '@fastify/cors';
 import { AppError } from './lib/errors.js';
 import { env } from './config/env.js';
@@ -24,8 +24,17 @@ export async function buildApp() {
 
   await app.register(cors, { origin: env.FRONTEND_URL ?? true });
 
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error: FastifyError | AppError, request, reply) => {
     if (error instanceof AppError) {
+      reply.code(error.statusCode).send({ error: error.message, statusCode: error.statusCode });
+      return;
+    }
+
+    // Errores propios de Fastify (body vacío con Content-Type: json, JSON
+    // malformado, etc.) ya traen su propio statusCode 4xx — se respeta en vez
+    // de taparlo con un 500 genérico, que escondería que fue un error del
+    // cliente, no del servidor.
+    if (typeof error.statusCode === 'number' && error.statusCode >= 400 && error.statusCode < 500) {
       reply.code(error.statusCode).send({ error: error.message, statusCode: error.statusCode });
       return;
     }
