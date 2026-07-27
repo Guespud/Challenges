@@ -19,6 +19,21 @@ automatizadas (BullMQ + Redis), y un panel administrativo para el staff.
   agenda de solo lectura del médico, y panel de staff (ver/filtrar/cancelar
   citas, log de eventos).
 
+## Producción (Railway)
+
+| Servicio | URL |
+| --- | --- |
+| Frontend | https://challenges-production-bd6a.up.railway.app |
+| Backend (API) | https://incredible-truth-production-bc37.up.railway.app |
+
+Usuarios de prueba — los mismos en local y en producción (mismo seed):
+
+| Rol | Email | Password | Qué ve |
+| --- | --- | --- | --- |
+| patient | `alejo@yopmail.com` | `Alejo#2026` | Agendar / Mis citas |
+| doctor | `doctora@vitalis-clinic.test` | `Vitalis#2026` | Mi agenda (solo lectura) |
+| staff | `staff@vitalis-clinic.test` | `Vitalis#2026` | Panel de citas (staff) |
+
 ## Quickstart
 
 ```bash
@@ -55,13 +70,8 @@ Sin una cuenta Stripe test configurada, el flujo funciona hasta el botón
 "Continuar a pago" — la creación del Checkout Session falla ahí de forma
 controlada (no crashea la app).
 
-Usuarios de prueba (creados por el seed):
-
-| Rol | Email | Password |
-| --- | --- | --- |
-| patient | `alejo@yopmail.com` | `Alejo#2026` |
-| doctor | `doctora@vitalis-clinic.test` | `Vitalis#2026` (agenda de solo lectura) |
-| staff | `staff@vitalis-clinic.test` | `Vitalis#2026` |
+Los usuarios de prueba (creados por el seed) son los mismos que en
+producción — ver la tabla arriba.
 
 ## Tests
 
@@ -91,8 +101,8 @@ navegador (Playwright): login por rol, booking con selección de horarios
 reales, "Mis citas", panel de staff. Paleta azul/blanco/negro/gris. Lo único
 no verificable sin una cuenta Stripe test real es el pago en sí.
 
-**Deploy: documentado, no ejecutado todavía.** Guía completa en
-[`docs/deploy-railway.md`](docs/deploy-railway.md) — 5 servicios de Railway
-(Postgres, Redis, backend HTTP, backend worker, frontend), todas las
-variables por servicio, y cómo registrar el webhook de Stripe en producción
-(distinto de `stripe listen`, que es solo para local).
+**Deploy: en producción en Railway.** 5 servicios (Postgres, Redis, backend
+HTTP, backend worker, frontend), URLs arriba. Webhook de Stripe configurado
+apuntando al backend real. Pendiente de verificar con datos reales: envío de
+email (`RESEND_API_KEY` sigue en placeholder) y Sentry (`SENTRY_DSN` vacío).
+Guía completa del proceso en [`docs/deploy-railway.md`](docs/deploy-railway.md).
