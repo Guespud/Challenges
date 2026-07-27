@@ -21,10 +21,7 @@ automatizadas (BullMQ + Redis), y un panel administrativo para el staff.
 
 ## Producción (Railway)
 
-| Servicio | URL |
-| --- | --- |
-| Frontend | https://challenges-production-bd6a.up.railway.app |
-| Backend (API) | https://incredible-truth-production-bc37.up.railway.app |
+https://challenges-production-bd6a.up.railway.app
 
 Usuarios de prueba — los mismos en local y en producción (mismo seed):
 
