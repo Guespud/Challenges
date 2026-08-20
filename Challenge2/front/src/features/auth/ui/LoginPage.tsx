@@ -22,7 +22,7 @@ export function LoginPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema), mode: 'onTouched' });
+  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema), mode: 'onChange' });
 
   async function onSubmit(data: LoginInput) {
     try {

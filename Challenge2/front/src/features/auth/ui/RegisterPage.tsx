@@ -23,7 +23,7 @@ export function RegisterPage() {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormInput>({ resolver: zodResolver(registerFormSchema), mode: 'onTouched' });
+  } = useForm<RegisterFormInput>({ resolver: zodResolver(registerFormSchema), mode: 'onChange' });
 
   const password = watch('password') ?? '';
 
