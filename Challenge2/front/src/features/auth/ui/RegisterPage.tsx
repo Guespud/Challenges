@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerFormSchema, type RegisterFormInput } from '../data/auth.schema';
 import { authApi } from '../data/endpoints';
 import { ApiError } from '../../../core/api';
+import { useToast } from '../../../core/toast/ToastProvider';
 import { AuthLayout } from './AuthLayout';
 import { TextField } from '../../../components/ui/TextField';
 import { PasswordField } from '../../../components/ui/PasswordField';
@@ -16,24 +16,23 @@ const { register: text } = content.auth;
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const [formError, setFormError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormInput>({ resolver: zodResolver(registerFormSchema) });
+  } = useForm<RegisterFormInput>({ resolver: zodResolver(registerFormSchema), mode: 'onTouched' });
 
   const password = watch('password') ?? '';
 
   async function onSubmit(data: RegisterFormInput) {
-    setFormError(null);
     try {
       await authApi.register({ name: data.name, email: data.email, password: data.password });
       navigate('/login', { replace: true });
     } catch (err) {
-      setFormError(err instanceof ApiError ? err.message : text.genericError);
+      showToast(err instanceof ApiError ? err.message : text.genericError, 'error');
     }
   }
 
@@ -76,8 +75,6 @@ export function RegisterPage() {
         />
 
         <PasswordRequirements password={password} />
-
-        {formError && <p className="text-sm text-red-600">{formError}</p>}
 
         <Button type="submit" disabled={isSubmitting} className="mt-2 w-full">
           {isSubmitting ? text.submitting : text.submit}
