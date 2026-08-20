@@ -10,7 +10,7 @@ interface NavItem {
 export function TopNav({ links, userName }: { readonly links: NavItem[]; readonly userName: string }) {
   return (
     <header className="border-b border-neutral-200 bg-white">
-      <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
+      <div className="flex w-full flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
         <div className="flex items-center gap-6">
           <span className="text-lg font-bold tracking-tight text-neutral-900">{content.brand.name}</span>
           <nav className="flex items-center gap-1">
