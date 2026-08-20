@@ -31,42 +31,49 @@ export function HabitEntriesTable({ entries }: { readonly entries: HabitEntry[] 
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-none flex-wrap items-end gap-3">
-        <label className="flex flex-col gap-1 text-xs font-medium text-neutral-600">
-          {text.from}
-          <input
-            type="date"
-            value={dateFrom}
-            max={dateTo || undefined}
-            onChange={(event) => setDateFrom(event.target.value)}
-            className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 transition focus:border-violet-400 focus:outline-none focus:ring-4 focus:ring-violet-100"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs font-medium text-neutral-600">
-          {text.to}
-          <input
-            type="date"
-            value={dateTo}
-            min={dateFrom || undefined}
-            onChange={(event) => setDateTo(event.target.value)}
-            className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 transition focus:border-violet-400 focus:outline-none focus:ring-4 focus:ring-violet-100"
-          />
-        </label>
-        {(dateFrom || dateTo) && (
-          <button
-            type="button"
-            onClick={() => {
-              setDateFrom('');
-              setDateTo('');
-            }}
-            className="rounded-full px-3 py-2 text-xs font-semibold text-violet-600 transition hover:bg-violet-50 hover:text-violet-800"
-          >
-            {text.clear}
-          </button>
-        )}
-        <span className="ml-auto self-center text-xs text-neutral-400">
-          {filteredDates.length} / {sortedDates.length}
-        </span>
+      <div className="flex flex-none flex-col gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-end sm:gap-3">
+          <label className="flex min-w-0 flex-col gap-1 text-xs font-medium text-neutral-600">
+            {text.from}
+            <input
+              type="date"
+              value={dateFrom}
+              max={dateTo || undefined}
+              onChange={(event) => setDateFrom(event.target.value)}
+              className="w-full min-w-0 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 transition focus:border-violet-400 focus:outline-none focus:ring-4 focus:ring-violet-100 sm:w-auto"
+            />
+          </label>
+          <label className="flex min-w-0 flex-col gap-1 text-xs font-medium text-neutral-600">
+            {text.to}
+            <input
+              type="date"
+              value={dateTo}
+              min={dateFrom || undefined}
+              onChange={(event) => setDateTo(event.target.value)}
+              className="w-full min-w-0 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 transition focus:border-violet-400 focus:outline-none focus:ring-4 focus:ring-violet-100 sm:w-auto"
+            />
+          </label>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          {dateFrom || dateTo ? (
+            <button
+              type="button"
+              onClick={() => {
+                setDateFrom('');
+                setDateTo('');
+              }}
+              className="-ml-3 rounded-full px-3 py-1.5 text-xs font-semibold text-violet-600 transition hover:bg-violet-50 hover:text-violet-800"
+            >
+              {text.clear}
+            </button>
+          ) : (
+            <span />
+          )}
+          <span className="text-xs text-neutral-400">
+            {filteredDates.length} / {sortedDates.length}
+          </span>
+        </div>
       </div>
 
       <div className="max-h-72 overflow-auto rounded-2xl border border-neutral-100">
