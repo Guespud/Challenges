@@ -154,6 +154,10 @@ de decisión de producto.**
 
 - Notificaciones por email, exportar PDF, modo offline/sync (stretch goals).
 - Rotación avanzada de refresh tokens (blacklist, family tracking).
-- Deploy en producción: repo preparado (scripts, CORS configurable, guía en
-  [`docs/deploy-railway.md`](docs/deploy-railway.md)), pero **no ejecutado
-  todavía** — requiere login interactivo del usuario en Railway.
+
+## Deploy
+
+Desplegado en Railway (backend + frontend + Postgres, ver
+[`docs/deploy-railway.md`](docs/deploy-railway.md) y
+[ADR-006](docs/adr/ADR-006-railpack-install-command.md) para el detalle del
+troubleshooting de `npm ci` en el builder de Railway).
