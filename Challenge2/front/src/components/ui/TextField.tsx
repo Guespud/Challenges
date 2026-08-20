@@ -25,7 +25,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
         } ${className}`}
         {...props}
       />
-      {error && <span className="text-xs font-normal text-red-600">{error}</span>}
+      <span className="block min-h-4 text-xs font-normal text-red-600" aria-live="polite">
+        {error}
+      </span>
     </label>
   );
 });
