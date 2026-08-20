@@ -4,6 +4,7 @@ import { env } from '../config/env.js';
 import { conflict, notFound, serviceUnavailable } from '../lib/errors.js';
 import { CANCELLABLE_STATUSES, OCCUPYING_STATUSES, PAID_STATUSES } from '../domain/appointment-state-machine.js';
 import { holdExpiryQueue } from '../queues/queues.js';
+import { nowLikeStored } from '../lib/time.js';
 import content from '../content/es.json' with { type: 'json' };
 
 const { errors } = content;
@@ -26,6 +27,17 @@ export async function createAppointment(input: CreateAppointmentInput) {
   const startsAt = new Date(input.startsAt);
   const endsAt = new Date(startsAt.getTime() + service.durationMin * 60_000);
 
+  // El hold vence HOLD_TTL_MINUTES antes de la hora de la cita, no
+  // HOLD_TTL_MINUTES después de crearla: un paciente que agenda con días de
+  // anticipación tiene hasta poco antes de su cita para pagar, no solo los
+  // primeros minutos tras reservar. Si falta menos de HOLD_TTL_MINUTES para
+  // la cita, se deja un margen mínimo (1 min) para pagar en vez de cancelar
+  // casi al instante.
+  const MIN_HOLD_MS = 60_000;
+  const holdExpiresAt = new Date(
+    Math.max(startsAt.getTime() - env.HOLD_TTL_MINUTES * 60_000, nowLikeStored().getTime() + MIN_HOLD_MS),
+  );
+
   const appointment = await prisma.$transaction(async (tx) => {
     const overlapping = await tx.appointment.findFirst({
       where: {
@@ -36,8 +48,6 @@ export async function createAppointment(input: CreateAppointmentInput) {
       },
     });
     if (overlapping) throw conflict(errors.slotNotAvailable);
-
-    const holdExpiresAt = new Date(Date.now() + env.HOLD_TTL_MINUTES * 60_000);
 
     const created = await tx.appointment.create({
       data: {
@@ -58,7 +68,7 @@ export async function createAppointment(input: CreateAppointmentInput) {
 
   // El checkout de Stripe se crea fuera de la transacción: si Stripe falla acá,
   // la cita `pending` ya existe pero nunca recibe checkoutSessionId; el job de
-  // hold-expiry la limpia igual a los HOLD_TTL_MINUTES sin dejar un hold huérfano.
+  // hold-expiry la limpia igual en holdExpiresAt sin dejar un hold huérfano.
   let session;
   try {
     session = await stripe.checkout.sessions.create({
@@ -94,7 +104,7 @@ export async function createAppointment(input: CreateAppointmentInput) {
   await holdExpiryQueue.add(
     'expire',
     { appointmentId: appointment.id, requestId: input.requestId },
-    { delay: env.HOLD_TTL_MINUTES * 60_000, jobId: `hold-expiry-${appointment.id}` },
+    { delay: Math.max(holdExpiresAt.getTime() - nowLikeStored().getTime(), 0), jobId: `hold-expiry-${appointment.id}` },
   );
 
   return { appointment, checkoutUrl: session.url };
@@ -177,6 +187,6 @@ export async function listMyAgendaAsDoctor(doctorId: string) {
   return prisma.appointment.findMany({
     where: { doctorId },
     include: { service: true, patient: { select: { id: true, name: true, email: true } } },
-    orderBy: { startsAt: 'asc' },
+    orderBy: { startsAt: 'desc' },
   });
 }

@@ -25,7 +25,7 @@ export async function listAppointments(query: z.infer<typeof adminAppointmentsQu
       doctor: { select: { id: true, name: true } },
       service: true,
     },
-    orderBy: { startsAt: 'asc' },
+    orderBy: { startsAt: 'desc' },
   });
 }
 

@@ -1,5 +1,6 @@
 import { prisma } from '../lib/prisma.js';
 import { OCCUPYING_STATUSES } from '../domain/appointment-state-machine.js';
+import { nowLikeStored } from '../lib/time.js';
 
 interface Slot {
   startsAt: string;
@@ -56,6 +57,10 @@ export async function getAvailableSlots(doctorId: string, date: Date): Promise<S
     for (let cursor = startMinutes; cursor + availability.slotDurationMin <= endMinutes; cursor += availability.slotDurationMin) {
       const slotStart = minutesToDate(dayStart, cursor);
       const slotEnd = minutesToDate(dayStart, cursor + availability.slotDurationMin);
+
+      if (slotStart.getTime() < nowLikeStored().getTime()) {
+        continue;
+      }
 
       const overlaps = busyAppointments.some(
         (appt) => slotStart < appt.endsAt && appt.startsAt < slotEnd,
