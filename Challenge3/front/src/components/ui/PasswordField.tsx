@@ -48,7 +48,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(fu
           aria-invalid={Boolean(error)}
           className={`w-full rounded-2xl border bg-neutral-50 px-4 py-3 pr-11 text-[15px] text-neutral-900 placeholder:text-neutral-400 transition focus:bg-white focus:outline-none focus:ring-4 ${
             error
-              ? 'border-neutral-900 focus:border-neutral-900 focus:ring-neutral-200'
+              ? 'border-red-400 focus:border-red-500 focus:ring-red-100'
               : 'border-neutral-200 focus:border-blue-400 focus:ring-blue-100'
           } ${className}`}
           {...props}
@@ -63,7 +63,9 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(fu
           {visible ? <EyeOffIcon /> : <EyeIcon />}
         </button>
       </span>
-      {error && <span className="text-xs font-semibold text-neutral-900">{error}</span>}
+      <span className="block min-h-4 text-xs font-semibold text-red-600" aria-live="polite">
+        {error}
+      </span>
     </label>
   );
 });
