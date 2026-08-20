@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth, RequireAuth, LoginPage, RegisterPage } from '../features/auth';
 import { PatientDashboardPage } from '../features/habits';
 import { NutritionistPatientsPage, NutritionistPatientDetailPage } from '../features/patients';
+import { AppLayout } from '../components/layout/AppLayout';
 
 function RoleRedirect() {
   const { user } = useAuth();
@@ -19,12 +20,16 @@ export default function App() {
       </Route>
 
       <Route element={<RequireAuth role="patient" />}>
-        <Route path="/paciente" element={<PatientDashboardPage />} />
+        <Route element={<AppLayout />}>
+          <Route path="/paciente" element={<PatientDashboardPage />} />
+        </Route>
       </Route>
 
       <Route element={<RequireAuth role="nutritionist" />}>
-        <Route path="/nutriologa" element={<NutritionistPatientsPage />} />
-        <Route path="/nutriologa/pacientes/:id" element={<NutritionistPatientDetailPage />} />
+        <Route element={<AppLayout />}>
+          <Route path="/nutriologa" element={<NutritionistPatientsPage />} />
+          <Route path="/nutriologa/pacientes/:id" element={<NutritionistPatientDetailPage />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
