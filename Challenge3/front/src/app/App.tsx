@@ -3,7 +3,7 @@ import { useAuth, RequireAuth, LoginPage, RegisterPage } from '../features/auth'
 import { BookingPage } from '../features/booking';
 import { AppointmentsPage, AppointmentReturnPage } from '../features/appointments';
 import { AdminAppointmentsPage, AdminAppointmentEventsPage } from '../features/admin';
-import { DoctorAgendaPage } from '../features/agenda';
+import { DoctorAgendaPage, DoctorDayAgendaPage } from '../features/agenda';
 import { homePathForRole } from '../core/role-home';
 import { PatientLayout } from './PatientLayout';
 import { StaffLayout } from './StaffLayout';
@@ -43,6 +43,7 @@ export default function App() {
       <Route element={<RequireAuth role="doctor" />}>
         <Route element={<DoctorLayout />}>
           <Route path="/medico" element={<DoctorAgendaPage />} />
+          <Route path="/medico/dia/:date" element={<DoctorDayAgendaPage />} />
         </Route>
       </Route>
 

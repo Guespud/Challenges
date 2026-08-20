@@ -3,6 +3,10 @@
     "name": "Vitalis Clinic",
     "monogram": "V"
   },
+  "footer": {
+    "tagline": "Tu salud, siempre a tiempo.",
+    "rights": "Todos los derechos reservados."
+  },
   "common": {
     "loading": "Cargando…",
     "logout": "Salir",
@@ -67,11 +71,15 @@
     "title": "Mi agenda",
     "subtitle": "Solo lectura — para cambios, contacta a recepción.",
     "empty": "No tienes citas agendadas.",
-    "patientLabel": "Paciente"
+    "patientLabel": "Paciente",
+    "pickDayPrompt": "Selecciona un día marcado en azul para ver tus citas.",
+    "backLink": "← Mi agenda",
+    "dayEmpty": "No tienes citas por venir ese día.",
+    "selectedDayLabel": "Citas del"
   },
   "booking": {
-    "title": "Agenda tu cita",
-    "subtitle": "Elige médico, servicio y horario",
+    "title": "Reserva tu consulta",
+    "subtitle": "Elige a tu médico, el servicio y el horario que mejor te acomode.",
     "doctorLabel": "Médico",
     "serviceLabel": "Servicio",
     "dateLabel": "Fecha",
@@ -84,15 +92,27 @@
     "confirming": "Redirigiendo a pago…",
     "genericError": "No se pudo crear la cita",
     "slotTaken": "Ese horario ya no está disponible, elige otro.",
+    "slotRequired": "Selecciona un horario",
     "priceLabel": "Precio",
     "durationLabel": "Duración"
   },
   "appointments": {
     "title": "Mis citas",
-    "empty": "Todavía no tienes citas. Agenda la primera desde \"Agendar\".",
+    "upcomingSection": "Próximas",
+    "historySection": "Historial",
+    "empty": "Todavía no tienes citas.",
+    "emptyCta": "Agendar cita",
+    "pendingHint": "Confirmando tu pago… puede tardar unos minutos.",
+    "prevPage": "Anterior",
+    "nextPage": "Siguiente",
+    "clearFilters": "Limpiar filtros",
     "cancel": "Cancelar",
     "cancelling": "Cancelando…",
     "cancelError": "No se pudo cancelar la cita",
+    "confirmCancelTitle": "¿Cancelar esta cita?",
+    "confirmCancelDescription": "Esta acción no se puede deshacer. Si ya se pagó, el reembolso se procesa automáticamente.",
+    "confirmCancelYes": "Sí, cancelar",
+    "confirmCancelNo": "No, mantener",
     "with": "con",
     "status": {
       "pending": "Pendiente de pago",
