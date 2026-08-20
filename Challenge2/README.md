@@ -43,7 +43,7 @@ Guía paso a paso para Railway (backend + Postgres + frontend):
 [`docs/deploy-railway.md`](docs/deploy-railway.md). Requiere cuenta propia en
 Railway — el login es interactivo por navegador, no se puede automatizar.
 
-Una vez desplegado, el link de producción va aquí: `<pendiente>`.
+En producción: https://challenges-production.up.railway.app/login
 
 ## Estado del challenge
 
