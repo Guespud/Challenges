@@ -3,6 +3,16 @@
     "name": "NutriFit",
     "monogram": "N"
   },
+  "nav": {
+    "roles": {
+      "patient": "Paciente",
+      "nutritionist": "Nutrióloga"
+    }
+  },
+  "footer": {
+    "tagline": "Cuida tus hábitos, un día a la vez.",
+    "rights": "Todos los derechos reservados."
+  },
   "common": {
     "loading": "Cargando…",
     "logout": "Salir"
@@ -87,6 +97,10 @@
       "exercise": "Ejercicio",
       "sleep": "Sueño",
       "empty": "Todavía no hay registros en este rango.",
+      "latest": "Último",
+      "windowLabel": "Último mes",
+      "rangeLabel": "Del",
+      "days": "registros",
       "units": {
         "water": "L",
         "exercise": "min",
@@ -95,7 +109,11 @@
     },
     "table": {
       "title": "Registros",
-      "date": "Fecha"
+      "date": "Fecha",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Limpiar",
+      "noResults": "No hay registros en ese rango de fechas."
     }
   },
   "patients": {
