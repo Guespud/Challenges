@@ -84,7 +84,7 @@
     "serviceLabel": "Servicio",
     "dateLabel": "Fecha",
     "selectPlaceholder": "Selecciona una opción",
-    "slotsTitle": "Horarios disponibles",
+    "slotsTitle": "Horarios disponibles (hora Colombia)",
     "noSlots": "No hay horarios disponibles para este día.",
     "pickDatePrompt": "Elige médico y fecha para ver horarios.",
     "loadingSlots": "Buscando horarios…",
