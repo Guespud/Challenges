@@ -1,0 +1,104 @@
+// output explícito: ver comentario igual en services/auth y services/payments.
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AppointmentStatus {
+  pending
+  confirmed
+  paid
+  reminded
+  completed
+  cancelled
+  no_show
+}
+
+enum UserRole {
+  patient
+  doctor
+  staff
+}
+
+// Proyección local de solo-lectura, poblada por el evento UserRegistered que
+// publica Auth (ver RFC-001). NUNCA se escribe desde acá salvo el consumer
+// de ese evento - Auth sigue siendo la única fuente de verdad de identidad.
+// Sin esto no hay forma de mostrar "Paciente: Alejo" en vez de un UUID, sin
+// llamar a Auth por HTTP en cada request.
+model UserProjection {
+  id        String   @id
+  name      String
+  email     String
+  role      UserRole
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("user_projection")
+}
+
+model DoctorAvailability {
+  id              String @id @default(uuid())
+  doctorId        String @map("doctor_id")
+  dayOfWeek       Int    @map("day_of_week")
+  startTime       String @map("start_time")
+  endTime         String @map("end_time")
+  slotDurationMin Int    @map("slot_duration_min")
+
+  @@index([doctorId, dayOfWeek])
+  @@map("doctor_availability")
+}
+
+model Service {
+  id          String        @id @default(uuid())
+  name        String
+  durationMin Int           @map("duration_min")
+  priceCents  Int           @map("price_cents")
+  appointments Appointment[]
+
+  @@map("services")
+}
+
+model Appointment {
+  id     String @id @default(uuid())
+  // Sin FK real a User (vive en otra base) — son UUIDs opacos, resueltos
+  // contra UserProjection cuando hace falta mostrar nombre/email.
+  patientId String @map("patient_id")
+  doctorId  String @map("doctor_id")
+
+  serviceId String  @map("service_id")
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  startsAt DateTime          @map("starts_at")
+  endsAt   DateTime          @map("ends_at")
+  status   AppointmentStatus
+
+  holdExpiresAt DateTime? @map("hold_expires_at")
+
+  // Referencia informativa nada más — Payments es quien decide si el pago se
+  // confirmó o no. Útil para debug/soporte, no se usa para tomar decisiones.
+  stripeCheckoutSessionId String? @unique @map("stripe_checkout_session_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  events AppointmentEvent[]
+
+  @@index([doctorId, startsAt])
+  @@index([status])
+  @@map("appointments")
+}
+
+model AppointmentEvent {
+  id            String      @id @default(uuid())
+  appointmentId String      @map("appointment_id")
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  type          String
+  payload       Json?
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@index([appointmentId, createdAt])
+  @@map("appointment_events")
+}

@@ -1,0 +1,152 @@
+{
+  "brand": {
+    "name": "Vitalis Clinic",
+    "monogram": "V"
+  },
+  "footer": {
+    "tagline": "Tu salud, siempre a tiempo.",
+    "rights": "Todos los derechos reservados."
+  },
+  "common": {
+    "loading": "Cargando…",
+    "logout": "Salir",
+    "genericError": "Ocurrió un error inesperado",
+    "retry": "Reintentar"
+  },
+  "nav": {
+    "book": "Agendar",
+    "myAppointments": "Mis citas",
+    "admin": "Citas",
+    "agenda": "Mi agenda"
+  },
+  "validation": {
+    "required": "Requerido",
+    "email": {
+      "invalid": "Email inválido"
+    },
+    "password": {
+      "min": "Mínimo 8 caracteres",
+      "weak": "La contraseña no cumple los requisitos",
+      "mismatch": "Las contraseñas no coinciden",
+      "rules": {
+        "length": "Al menos 8 caracteres",
+        "uppercase": "Una letra mayúscula",
+        "lowercase": "Una letra minúscula",
+        "number": "Un número",
+        "special": "Un carácter especial (!@#$%...)"
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Bienvenido de vuelta",
+      "subtitle": "Inicia sesión para gestionar tus citas",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "footerQuestion": "¿No tienes cuenta?",
+      "footerCta": "Regístrate",
+      "genericError": "No se pudo iniciar sesión"
+    },
+    "register": {
+      "title": "Crea tu cuenta",
+      "subtitle": "Regístrate para agendar tus citas médicas",
+      "nameLabel": "Nombre",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "confirmPasswordLabel": "Confirmar contraseña",
+      "submit": "Crear cuenta",
+      "submitting": "Creando…",
+      "footerQuestion": "¿Ya tienes cuenta?",
+      "footerCta": "Inicia sesión",
+      "genericError": "No se pudo completar el registro"
+    },
+    "passwordField": {
+      "show": "Mostrar contraseña",
+      "hide": "Ocultar contraseña"
+    }
+  },
+  "agenda": {
+    "title": "Mi agenda",
+    "subtitle": "Solo lectura — para cambios, contacta a recepción.",
+    "empty": "No tienes citas agendadas.",
+    "patientLabel": "Paciente",
+    "pickDayPrompt": "Selecciona un día marcado en azul para ver tus citas.",
+    "backLink": "← Mi agenda",
+    "dayEmpty": "No tienes citas por venir ese día.",
+    "selectedDayLabel": "Citas del"
+  },
+  "booking": {
+    "title": "Reserva tu consulta",
+    "subtitle": "Elige a tu médico, el servicio y el horario que mejor te acomode.",
+    "doctorLabel": "Médico",
+    "serviceLabel": "Servicio",
+    "dateLabel": "Fecha",
+    "selectPlaceholder": "Selecciona una opción",
+    "slotsTitle": "Horarios disponibles",
+    "noSlots": "No hay horarios disponibles para este día.",
+    "pickDatePrompt": "Elige médico y fecha para ver horarios.",
+    "loadingSlots": "Buscando horarios…",
+    "confirm": "Continuar a pago",
+    "confirming": "Redirigiendo a pago…",
+    "genericError": "No se pudo crear la cita",
+    "slotTaken": "Ese horario ya no está disponible, elige otro.",
+    "slotRequired": "Selecciona un horario",
+    "priceLabel": "Precio",
+    "durationLabel": "Duración"
+  },
+  "appointments": {
+    "title": "Mis citas",
+    "upcomingSection": "Próximas",
+    "historySection": "Historial",
+    "empty": "Todavía no tienes citas.",
+    "emptyCta": "Agendar cita",
+    "pendingHint": "Confirmando tu pago… puede tardar unos minutos.",
+    "prevPage": "Anterior",
+    "nextPage": "Siguiente",
+    "clearFilters": "Limpiar filtros",
+    "cancel": "Cancelar",
+    "cancelling": "Cancelando…",
+    "cancelError": "No se pudo cancelar la cita",
+    "confirmCancelTitle": "¿Cancelar esta cita?",
+    "confirmCancelDescription": "Esta acción no se puede deshacer. Si ya se pagó, el reembolso se procesa automáticamente.",
+    "confirmCancelYes": "Sí, cancelar",
+    "confirmCancelNo": "No, mantener",
+    "with": "con",
+    "status": {
+      "pending": "Pendiente de pago",
+      "confirmed": "Confirmada",
+      "paid": "Pagada",
+      "reminded": "Recordatorio enviado",
+      "completed": "Completada",
+      "cancelled": "Cancelada",
+      "no_show": "No se presentó"
+    }
+  },
+  "return": {
+    "confirmingTitle": "Confirmando tu pago…",
+    "confirmingBody": "Esto puede tardar unos segundos mientras Stripe nos avisa que el pago se completó.",
+    "successTitle": "¡Cita confirmada!",
+    "successBody": "Tu pago quedó registrado y tu cita está agendada. Te llegará un correo de confirmación.",
+    "cancelledTitle": "Pago no completado",
+    "cancelledBody": "No se completó el pago. Puedes intentarlo de nuevo desde \"Mis citas\".",
+    "stillPendingTitle": "Seguimos esperando la confirmación",
+    "stillPendingBody": "El pago está tardando más de lo normal en confirmarse. Revisa \"Mis citas\" en unos minutos.",
+    "backLink": "Ir a mis citas"
+  },
+  "admin": {
+    "title": "Citas",
+    "filterStatus": "Estado",
+    "filterDate": "Fecha",
+    "allStatuses": "Todos los estados",
+    "empty": "No hay citas para este filtro.",
+    "viewEvents": "Ver eventos",
+    "cancel": "Cancelar",
+    "eventsTitle": "Log de eventos",
+    "eventsEmpty": "Esta cita todavía no tiene eventos.",
+    "backLink": "← Citas",
+    "patientLabel": "Paciente",
+    "doctorLabel": "Médico"
+  }
+}

@@ -1,0 +1,9 @@
+**/node_modules
+**/dist
+**/.env
+**/.env.test
+back
+front
+.git
+.github
+*.log

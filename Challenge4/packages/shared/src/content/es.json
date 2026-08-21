@@ -1,0 +1,29 @@
+{
+  "errors": {
+    "unauthorized": "No autenticado",
+    "forbidden": "No tienes permiso para acceder a este recurso",
+    "notFound": "Recurso no encontrado",
+    "internalServer": "Error interno del servidor",
+    "invalidToken": "Token inválido o expirado",
+    "invalidCredentials": "Credenciales inválidas",
+    "invalidRefreshToken": "Refresh token inválido o expirado",
+    "userNotFound": "Usuario no encontrado",
+    "emailAlreadyRegistered": "El email ya está registrado",
+    "doctorNotFound": "Médico no encontrado",
+    "serviceNotFound": "Servicio no encontrado",
+    "appointmentNotFound": "Cita no encontrada",
+    "slotNotAvailable": "El horario seleccionado ya no está disponible",
+    "appointmentNotCancellable": "La cita no se puede cancelar en su estado actual",
+    "invalidStripeSignature": "Firma de webhook inválida",
+    "paymentProviderUnavailable": "No se pudo iniciar el pago, el proveedor no está disponible. Intenta de nuevo en unos minutos."
+  },
+  "validation": {
+    "password": {
+      "min": "Mínimo 8 caracteres",
+      "uppercase": "Debe incluir una mayúscula",
+      "lowercase": "Debe incluir una minúscula",
+      "number": "Debe incluir un número",
+      "special": "Debe incluir un carácter especial"
+    }
+  }
+}

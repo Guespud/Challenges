@@ -1,0 +1,45 @@
+name: CI — notifications
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/notifications/**'
+      - 'packages/shared/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-notifications.yml'
+  pull_request:
+    paths:
+      - 'services/notifications/**'
+      - 'packages/shared/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-notifications.yml'
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        working-directory: services/notifications
+        run: npm run typecheck
+
+      - name: Tests
+        working-directory: services/notifications
+        # --passWithNoTests: sin BD propia (worker puro), todavía sin tests
+        # reales — pendiente, ver README de docs/adr.
+        run: npm test
+
+      - name: Build
+        working-directory: services/notifications
+        run: npm run build

@@ -1,0 +1,34 @@
+// output explícito: en un monorepo con npm workspaces, sin esto Prisma
+// genera al node_modules/@prisma/client de la raíz, compartido por todos los
+// servicios — el último `prisma generate` que corra pisa el cliente (y los
+// tipos) de los demás. Cada servicio genera el suyo, local a sí mismo.
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  patient
+  doctor
+  staff
+}
+
+// Dueño exclusivo de la identidad de usuario. Appointments/Payments/
+// Notifications NUNCA hacen join contra esta tabla (ni siquiera por FK real,
+// que no existe entre bases distintas) - reciben patientId/doctorId como
+// UUID opaco y, si necesitan nombre/email para mostrar, los resuelven vía el
+// evento UserRegistered que este servicio publica (ver RFC-001).
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role
+  name         String
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}

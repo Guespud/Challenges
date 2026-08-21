@@ -1,0 +1,182 @@
+openapi: 3.1.0
+info:
+  title: Vitalis Clinic — Payments Service
+  version: 1.0.0
+  description: >
+    Integración con Stripe, idempotencia de webhooks y reembolsos. Dueño
+    exclusivo de `Payment`, `WebhookEvent`, `PendingCheckout`. Las rutas bajo
+    `/internal/*` son servicio-a-servicio (llamadas por Appointments) y el
+    gateway **nunca** las expone públicamente — ver
+    `gateway/src/routes/proxy.routes.ts` y RFC-001-bounded-contexts.md.
+servers:
+  - url: http://localhost:4000
+    description: Gateway local (Docker Compose) — solo /webhooks/stripe pasa por acá
+  - url: http://localhost:3003
+    description: Servicio directo, local (incluye /internal, no expuesto en el gateway)
+
+tags:
+  - name: webhooks
+  - name: internal
+
+components:
+  securitySchemes:
+    internalToken:
+      type: apiKey
+      in: header
+      name: x-internal-token
+      description: Token compartido servicio-a-servicio, nunca expuesto al cliente final.
+  schemas:
+    Error:
+      type: object
+      required: [error, statusCode]
+      properties:
+        error:
+          type: string
+        statusCode:
+          type: integer
+    CreateCheckoutSessionRequest:
+      type: object
+      required: [appointmentId, amountCents, serviceName, successUrl, cancelUrl]
+      properties:
+        appointmentId:
+          type: string
+          format: uuid
+        amountCents:
+          type: integer
+          minimum: 1
+        serviceName:
+          type: string
+        successUrl:
+          type: string
+          format: uri
+        cancelUrl:
+          type: string
+          format: uri
+    CreateCheckoutSessionResponse:
+      type: object
+      properties:
+        checkoutUrl:
+          type: string
+          format: uri
+        checkoutSessionId:
+          type: string
+    RefundResponse:
+      type: object
+      properties:
+        refundId:
+          type: string
+    WebhookAck:
+      type: object
+      properties:
+        received:
+          type: boolean
+
+paths:
+  /webhooks/stripe:
+    post:
+      tags: [webhooks]
+      summary: Webhook de Stripe (checkout.session.completed y otros)
+      description: >
+        Body crudo firmado por Stripe (header `stripe-signature`), verificado
+        contra `STRIPE_WEBHOOK_SECRET`. Idempotente vía la tabla
+        `WebhookEvent` — reenvíos del mismo evento no duplican el efecto (ver
+        ADR-007, heredado de Challenge 3). Siempre responde 200 ante una
+        firma válida, incluso si el evento ya se procesó antes o no es de un
+        tipo que nos interesa, para que Stripe no reintente indefinidamente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Evento de Stripe, forma cruda sin parsear por el framework.
+      parameters:
+        - name: stripe-signature
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Firma válida, evento aceptado (procesado o ignorado).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookAck'
+        '400':
+          description: Firma inválida o ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /internal/checkout-sessions:
+    post:
+      tags: [internal]
+      summary: Crear una sesión de checkout (llamado por Appointments)
+      security:
+        - internalToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCheckoutSessionRequest'
+      responses:
+        '201':
+          description: Sesión creada, con `PendingCheckout` registrado para reconciliación.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCheckoutSessionResponse'
+        '400':
+          description: Body inválido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Token interno inválido/ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Stripe no disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /internal/payments/{appointmentId}/refund:
+    post:
+      tags: [internal]
+      summary: Reembolsar el pago de una cita (llamado por Appointments)
+      security:
+        - internalToken: []
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Reembolso procesado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundResponse'
+        '403':
+          description: Token interno inválido/ausente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No hay un pago registrado para esa cita.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

@@ -1,0 +1,83 @@
+name: CI — payments
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/payments/**'
+      - 'packages/shared/**'
+      - 'docs/openapi/payments.yaml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-payments.yml'
+  pull_request:
+    paths:
+      - 'services/payments/**'
+      - 'packages/shared/**'
+      - 'docs/openapi/payments.yaml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-payments.yml'
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: vitalis
+          POSTGRES_PASSWORD: vitalis
+          POSTGRES_DB: vitalis_payments_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vitalis"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://vitalis:vitalis@localhost:5432/vitalis_payments_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      STRIPE_SECRET_KEY: sk_test_placeholder
+      STRIPE_WEBHOOK_SECRET: whsec_placeholder
+      INTERNAL_SERVICE_TOKEN: test-internal-token
+      PORT: 3003
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generar cliente de Prisma
+        working-directory: services/payments
+        run: npx prisma generate
+
+      - name: Migrar base de test
+        working-directory: services/payments
+        run: npx prisma migrate deploy
+
+      - name: Typecheck
+        working-directory: services/payments
+        run: npm run typecheck
+
+      - name: Tests
+        working-directory: services/payments
+        run: NODE_ENV=test npx vitest run
+
+      - name: Build
+        working-directory: services/payments
+        run: npm run build

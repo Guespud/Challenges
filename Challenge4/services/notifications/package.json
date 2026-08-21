@@ -1,0 +1,27 @@
+{
+  "name": "@vitalis/notifications-service",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "worker": "tsx watch src/worker.ts",
+    "build": "tsc",
+    "start:worker": "node dist/worker.js",
+    "typecheck": "tsc --noEmit",
+    "test": "NODE_ENV=test vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@vitalis/shared": "*",
+    "bullmq": "^5.81.2",
+    "dotenv": "^17.4.2",
+    "ioredis": "^5.11.1",
+    "resend": "^6.18.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "~6.0.2",
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,0 +1,86 @@
+name: CI — appointments
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/appointments/**'
+      - 'packages/shared/**'
+      - 'docs/openapi/appointments.yaml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-appointments.yml'
+  pull_request:
+    paths:
+      - 'services/appointments/**'
+      - 'packages/shared/**'
+      - 'docs/openapi/appointments.yaml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-appointments.yml'
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: vitalis
+          POSTGRES_PASSWORD: vitalis
+          POSTGRES_DB: vitalis_appointments_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vitalis"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://vitalis:vitalis@localhost:5432/vitalis_appointments_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: test-access-secret
+      PORT: 3002
+      FRONTEND_URL: http://localhost:5173
+      PAYMENTS_SERVICE_URL: http://localhost:3003
+      INTERNAL_SERVICE_TOKEN: test-internal-token
+      HOLD_TTL_MINUTES: 15
+      REMINDER_HOURS_BEFORE: 24
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generar cliente de Prisma
+        working-directory: services/appointments
+        run: npx prisma generate
+
+      - name: Migrar base de test
+        working-directory: services/appointments
+        run: npx prisma migrate deploy
+
+      - name: Typecheck
+        working-directory: services/appointments
+        run: npm run typecheck
+
+      - name: Tests
+        working-directory: services/appointments
+        run: NODE_ENV=test npx vitest run
+
+      - name: Build
+        working-directory: services/appointments
+        run: npm run build

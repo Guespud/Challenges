@@ -1,0 +1,60 @@
+// output explícito: en un monorepo con npm workspaces, sin esto Prisma
+// genera al node_modules/@prisma/client de la raíz, compartido por todos los
+// servicios — el último `prisma generate` que corra pisa el cliente (y los
+// tipos) de los demás. Cada servicio genera el suyo, local a sí mismo.
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PaymentStatus {
+  succeeded
+  refunded
+  refund_failed
+}
+
+// Dueño exclusivo del estado de pago. `appointmentId` es un UUID opaco (sin
+// FK real: Appointments vive en otra base) - Payments no sabe qué es una
+// "cita", solo que existe algo identificado por ese id que tiene un pago
+// asociado.
+model Payment {
+  id                     String        @id @default(uuid())
+  appointmentId          String        @unique @map("appointment_id")
+  stripePaymentIntentId  String        @unique @map("stripe_payment_intent_id")
+  amountCents            Int           @map("amount_cents")
+  status                 PaymentStatus
+  stripeRefundId         String?       @map("stripe_refund_id")
+  createdAt              DateTime      @default(now()) @map("created_at")
+
+  @@map("payments")
+}
+
+// Idempotencia de webhooks de Stripe — ver ADR-007 (heredado del monolito).
+model WebhookEvent {
+  id            String   @id @default(uuid())
+  stripeEventId String   @unique @map("stripe_event_id")
+  type          String
+  processedAt   DateTime @default(now()) @map("processed_at")
+
+  @@map("webhook_events")
+}
+
+// Reemplaza la consulta que el monolito hacía contra `Appointment` para el
+// worker de reconciliación (citas `pending` viejas con un checkout
+// asociado). Payments ahora rastrea sus propios checkouts iniciados y
+// reconcilia contra ESTA tabla, sin tocar la base de Appointments.
+model PendingCheckout {
+  id                      String    @id @default(uuid())
+  appointmentId           String    @unique @map("appointment_id")
+  stripeCheckoutSessionId String    @unique @map("stripe_checkout_session_id")
+  amountCents             Int       @map("amount_cents")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  resolvedAt              DateTime? @map("resolved_at")
+
+  @@index([resolvedAt, createdAt])
+  @@map("pending_checkouts")
+}

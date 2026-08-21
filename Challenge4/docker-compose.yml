@@ -1,0 +1,206 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vitalis"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # --- Auth ---
+  auth-migrate:
+    build: .
+    working_dir: /app/services/auth
+    command: npx prisma migrate deploy
+    environment: &auth-env
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/vitalis_auth?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      PORT: 3001
+      FRONTEND_URL: http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  auth:
+    build: .
+    working_dir: /app/services/auth
+    command: node dist/server.js
+    environment: *auth-env
+    ports:
+      - "4001:3001"
+    depends_on:
+      auth-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  # --- Appointments ---
+  appointments-migrate:
+    build: .
+    working_dir: /app/services/appointments
+    command: npx prisma migrate deploy
+    environment: &appointments-env
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/vitalis_appointments?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      PORT: 3002
+      FRONTEND_URL: http://localhost:5173
+      PAYMENTS_SERVICE_URL: http://payments:3003
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN}
+      HOLD_TTL_MINUTES: 15
+      REMINDER_HOURS_BEFORE: 24
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  appointments:
+    build: .
+    working_dir: /app/services/appointments
+    command: node dist/server.js
+    environment: *appointments-env
+    ports:
+      - "4002:3002"
+    depends_on:
+      appointments-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  appointments-worker:
+    build: .
+    working_dir: /app/services/appointments
+    command: node dist/worker.js
+    environment: *appointments-env
+    depends_on:
+      appointments-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  # --- Payments ---
+  payments-migrate:
+    build: .
+    working_dir: /app/services/payments
+    command: npx prisma migrate deploy
+    environment: &payments-env
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/vitalis_payments?schema=public
+      REDIS_URL: redis://redis:6379
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN}
+      PORT: 3003
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  payments:
+    build: .
+    working_dir: /app/services/payments
+    command: node dist/server.js
+    environment: *payments-env
+    ports:
+      - "4003:3003"
+    depends_on:
+      payments-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  payments-worker:
+    build: .
+    working_dir: /app/services/payments
+    command: node dist/worker.js
+    environment: *payments-env
+    depends_on:
+      payments-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  # --- Notifications (sin BD propia) ---
+  notifications-worker:
+    build: .
+    working_dir: /app/services/notifications
+    command: node dist/worker.js
+    environment:
+      REDIS_URL: redis://redis:6379
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      EMAIL_FROM: ${EMAIL_FROM}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # --- Gateway ---
+  gateway:
+    build: .
+    working_dir: /app/gateway
+    command: node dist/server.js
+    environment:
+      PORT: 3000
+      FRONTEND_URL: http://localhost:5173
+      AUTH_SERVICE_URL: http://auth:3001
+      APPOINTMENTS_SERVICE_URL: http://appointments:3002
+      PAYMENTS_SERVICE_URL: http://payments:3003
+    ports:
+      - "4000:3000"
+    depends_on:
+      - auth
+      - appointments
+      - payments
+
+  # --- Observabilidad ---
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - auth
+      - appointments
+      - payments
+      - gateway
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: vitalis
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3300:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:

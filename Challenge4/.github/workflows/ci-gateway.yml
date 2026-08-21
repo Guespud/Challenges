@@ -1,0 +1,39 @@
+name: CI — gateway
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'gateway/**'
+      - 'packages/shared/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-gateway.yml'
+  pull_request:
+    paths:
+      - 'gateway/**'
+      - 'packages/shared/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci-gateway.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        working-directory: gateway
+        run: npm run typecheck
+
+      - name: Build
+        working-directory: gateway
+        run: npm run build

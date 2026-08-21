@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  patient
+  doctor
+  staff
+}
+
+enum AppointmentStatus {
+  pending
+  confirmed
+  paid
+  reminded
+  completed
+  cancelled
+  no_show
+}
+
+enum PaymentStatus {
+  succeeded
+  refunded
+  refund_failed
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role
+  name         String
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  availability          DoctorAvailability[] @relation("DoctorAvailability")
+  appointmentsAsPatient Appointment[]        @relation("PatientAppointments")
+  appointmentsAsDoctor  Appointment[]        @relation("DoctorAppointments")
+
+  @@map("users")
+}
+
+model DoctorAvailability {
+  id              String @id @default(uuid())
+  doctorId        String @map("doctor_id")
+  doctor          User   @relation("DoctorAvailability", fields: [doctorId], references: [id])
+  dayOfWeek       Int    @map("day_of_week")
+  startTime       String @map("start_time")
+  endTime         String @map("end_time")
+  slotDurationMin Int    @map("slot_duration_min")
+
+  @@index([doctorId, dayOfWeek])
+  @@map("doctor_availability")
+}
+
+model Service {
+  id           String        @id @default(uuid())
+  name         String
+  durationMin  Int           @map("duration_min")
+  priceCents   Int           @map("price_cents")
+  appointments Appointment[]
+
+  @@map("services")
+}
+
+model Appointment {
+  id                       String            @id @default(uuid())
+  patientId                String            @map("patient_id")
+  patient                  User              @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctorId                 String            @map("doctor_id")
+  doctor                   User              @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  serviceId                String            @map("service_id")
+  service                  Service           @relation(fields: [serviceId], references: [id])
+  startsAt                 DateTime          @map("starts_at")
+  endsAt                   DateTime          @map("ends_at")
+  status                   AppointmentStatus @default(pending)
+  holdExpiresAt             DateTime?        @map("hold_expires_at")
+  stripePaymentIntentId    String?           @unique @map("stripe_payment_intent_id")
+  stripeCheckoutSessionId  String?           @unique @map("stripe_checkout_session_id")
+  createdAt                DateTime          @default(now()) @map("created_at")
+  updatedAt                DateTime          @updatedAt @map("updated_at")
+
+  payment Payment?
+  events  AppointmentEvent[]
+
+  @@index([doctorId, startsAt])
+  @@index([status])
+  @@map("appointments")
+}
+
+model Payment {
+  id                    String        @id @default(uuid())
+  appointmentId         String        @unique @map("appointment_id")
+  appointment           Appointment   @relation(fields: [appointmentId], references: [id])
+  stripePaymentIntentId String        @unique @map("stripe_payment_intent_id")
+  amountCents           Int           @map("amount_cents")
+  status                PaymentStatus @default(succeeded)
+  stripeRefundId        String?       @map("stripe_refund_id")
+  createdAt              DateTime     @default(now()) @map("created_at")
+
+  @@map("payments")
+}
+
+model AppointmentEvent {
+  id            String      @id @default(uuid())
+  appointmentId String      @map("appointment_id")
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  type          String
+  payload       Json?
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@index([appointmentId, createdAt])
+  @@map("appointment_events")
+}
+
+model WebhookEvent {
+  id            String   @id @default(uuid())
+  stripeEventId String   @unique @map("stripe_event_id")
+  type          String
+  processedAt   DateTime @default(now()) @map("processed_at")
+
+  @@map("webhook_events")
+}
